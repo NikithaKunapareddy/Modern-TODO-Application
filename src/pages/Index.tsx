@@ -7,6 +7,12 @@ import Calendar from "@/components/Calendar";
 import SortOptions, { SortMethod } from "@/components/SortOptions";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import {
+  ListTodo,
+  Calendar as CalendarIcon,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 
 // Sample data for initial load if localStorage is empty
 const initialLists = [
@@ -68,6 +74,7 @@ const Index = () => {
   const [activeList, setActiveList] = useState<string>("");
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
   const [showingAllTodos, setShowingAllTodos] = useState(false);
+  const [showCalendarMobile, setShowCalendarMobile] = useState(false);
 
   // Load data from localStorage on initial render
   useEffect(() => {
@@ -329,28 +336,60 @@ const Index = () => {
   const { month, day } = formatDate(selectedDate);
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <TodoSidebar
-        lists={lists}
-        onAddList={handleAddList}
-        onSelectList={handleSelectList}
-        onDeleteList={handleDeleteList}
-        onShowAllTodos={handleShowAllTodos}
-        showingAllTodos={showingAllTodos}
-      />
+    <div className="flex flex-col md:flex-row h-screen overflow-hidden">
+      <div className="md:hidden p-4 bg-todo-sidebar flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          <ListTodo className="text-todo-yellow w-5 h-5" />
+          <h1 className="text-xl font-bold">Your Todo's</h1>
+        </div>
+        <button
+          onClick={() =>
+            document.getElementById("mobileSidebar")?.classList.toggle("hidden")
+          }
+          className="p-2 rounded-md hover:bg-muted"
+        >
+          <ListTodo className="w-5 h-5" />
+        </button>
+      </div>
 
-      <main className="flex-1 flex overflow-hidden">
-        <div className="flex-1 overflow-y-auto px-8 py-6">
+      <div
+        id="mobileSidebar"
+        className="hidden md:block md:static absolute z-10 w-full md:w-64 h-[calc(100vh-60px)] md:h-screen bg-todo-sidebar"
+      >
+        <TodoSidebar
+          lists={lists}
+          onAddList={handleAddList}
+          onSelectList={(id) => {
+            handleSelectList(id);
+            if (window.innerWidth < 768) {
+              document.getElementById("mobileSidebar")?.classList.add("hidden");
+            }
+          }}
+          onDeleteList={handleDeleteList}
+          onShowAllTodos={() => {
+            handleShowAllTodos();
+            if (window.innerWidth < 768) {
+              document.getElementById("mobileSidebar")?.classList.add("hidden");
+            }
+          }}
+          showingAllTodos={showingAllTodos}
+        />
+      </div>
+
+      <main className="flex-1 flex flex-col md:flex-row overflow-hidden">
+        <div className="flex-1 overflow-y-auto px-4 md:px-8 py-6">
           <div className="mb-8">
             <div className="flex items-baseline gap-3 mb-2">
-              <div className="text-4xl font-medium text-todo-text-secondary">
+              <div className="text-3xl md:text-4xl font-medium text-todo-text-secondary">
                 {month}
               </div>
-              <div className="text-5xl font-bold">{day}</div>
+              <div className="text-4xl md:text-5xl font-bold">{day}</div>
             </div>
             <div className="space-y-1">
-              <h2 className="text-3xl font-semibold">{getGreeting()}.</h2>
-              <p className="text-3xl text-todo-text-secondary">
+              <h2 className="text-2xl md:text-3xl font-semibold">
+                {getGreeting()}.
+              </h2>
+              <p className="text-xl md:text-3xl text-todo-text-secondary">
                 What's your plan for today?
               </p>
             </div>
@@ -381,13 +420,39 @@ const Index = () => {
           </div>
         </div>
 
-        <aside className="w-72 p-6 border-l border-todo-sidebar overflow-y-auto">
-          <Calendar
-            currentDate={currentMonth}
-            selectedDate={selectedDate}
-            onDateSelect={handleDateSelect}
-            onMonthChange={handleMonthChange}
-          />
+        <aside className="border-t md:border-t-0 md:border-l border-todo-sidebar w-full md:w-72 p-4 md:p-6 overflow-y-auto">
+          {/* Mobile Calendar Toggle */}
+          <div className="md:hidden">
+            <button
+              onClick={() => setShowCalendarMobile(!showCalendarMobile)}
+              className="flex items-center gap-2 mb-3 w-full justify-between bg-muted rounded-md p-2"
+            >
+              <div className="flex items-center gap-2">
+                <CalendarIcon className="w-4 h-4" />
+                <span className="font-medium">Calendar</span>
+              </div>
+              {showCalendarMobile ? (
+                <ChevronUp className="w-4 h-4" />
+              ) : (
+                <ChevronDown className="w-4 h-4" />
+              )}
+            </button>
+          </div>
+
+          {/* Calendar visible on desktop, conditionally visible on mobile */}
+          <div className={showCalendarMobile ? "block" : "hidden md:block"}>
+            <Calendar
+              currentDate={currentMonth}
+              selectedDate={selectedDate}
+              onDateSelect={(date) => {
+                handleDateSelect(date);
+                if (window.innerWidth < 768) {
+                  setShowCalendarMobile(false);
+                }
+              }}
+              onMonthChange={handleMonthChange}
+            />
+          </div>
 
           <div className="h-6"></div>
 
