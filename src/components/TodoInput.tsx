@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -33,8 +33,16 @@ const TodoInput = ({
   const [title, setTitle] = useState("");
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [priority, setPriority] = useState<"high" | "medium" | "low">("medium");
-  const [tag, setTag] = useState<string>(availableTags[0] || "");
+  const [tag, setTag] = useState<string>("");
   const [showOptions, setShowOptions] = useState(false);
+
+  // Update the tag when availableTags changes (which happens when the active list changes)
+  useEffect(() => {
+    // The activeListName is always the last item in availableTags array
+    if (availableTags.length > 0) {
+      setTag(availableTags[availableTags.length - 1]);
+    }
+  }, [availableTags]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
