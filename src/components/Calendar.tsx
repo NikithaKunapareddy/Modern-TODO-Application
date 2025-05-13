@@ -1,54 +1,58 @@
-
-import React from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import React from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface CalendarProps {
   currentDate: Date;
   selectedDate: Date;
   onDateSelect: (date: Date) => void;
-  onMonthChange: (direction: 'prev' | 'next') => void;
+  onMonthChange: (direction: "prev" | "next") => void;
 }
 
-const Calendar = ({ currentDate, selectedDate, onDateSelect, onMonthChange }: CalendarProps) => {
-  const DAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+const Calendar = ({
+  currentDate,
+  selectedDate,
+  onDateSelect,
+  onMonthChange,
+}: CalendarProps) => {
+  const DAYS = ["S", "M", "T", "W", "T", "F", "S"];
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
-  
+
   // Get days in month
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-  
+
   // Get first day of month
   const firstDayOfMonth = new Date(year, month, 1).getDay();
-  
+
   // Generate calendar days
   const generateCalendarDays = () => {
     const days = [];
-    
+
     // Add empty slots for days before the first day of month
     for (let i = 0; i < firstDayOfMonth; i++) {
-      days.push(<div key={`empty-${i}`} className="h-8 w-8" />);
+      days.push(<div key={`empty-${i}`} className="h-6 md:h-8 w-6 md:w-8" />);
     }
-    
+
     // Add days of the month
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(year, month, day);
-      const isSelected = 
-        date.getDate() === selectedDate.getDate() && 
-        date.getMonth() === selectedDate.getMonth() && 
+      const isSelected =
+        date.getDate() === selectedDate.getDate() &&
+        date.getMonth() === selectedDate.getMonth() &&
         date.getFullYear() === selectedDate.getFullYear();
-      
-      const isToday = 
-        date.getDate() === new Date().getDate() && 
-        date.getMonth() === new Date().getMonth() && 
+
+      const isToday =
+        date.getDate() === new Date().getDate() &&
+        date.getMonth() === new Date().getMonth() &&
         date.getFullYear() === new Date().getFullYear();
-      
+
       days.push(
-        <button 
+        <button
           key={`day-${day}`}
           onClick={() => onDateSelect(date)}
           className={cn(
-            "flex items-center justify-center h-8 w-8 rounded-full text-sm",
+            "flex items-center justify-center h-6 md:h-8 w-6 md:w-8 rounded-full text-xs md:text-sm",
             isSelected && "bg-todo-yellow text-todo-bg font-medium",
             !isSelected && isToday && "bg-muted text-todo-text-primary",
             !isSelected && !isToday && "hover:bg-muted"
@@ -58,39 +62,46 @@ const Calendar = ({ currentDate, selectedDate, onDateSelect, onMonthChange }: Ca
         </button>
       );
     }
-    
+
     return days;
   };
-  
+
   // Format month name
-  const monthName = currentDate.toLocaleString('default', { month: 'short' });
-  
+  const monthName = currentDate.toLocaleString("default", { month: "short" });
+
   return (
-    <div className="bg-todo-bg p-4 rounded-lg">
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-2">
-          <button onClick={() => onMonthChange('prev')} className="text-todo-text-secondary hover:text-todo-text-primary">
-            <ChevronLeft className="h-5 w-5" />
+    <div className="bg-todo-bg p-2 md:p-4 rounded-lg">
+      <div className="flex justify-between items-center mb-2 md:mb-4">
+        <div className="flex items-center gap-1 md:gap-2">
+          <button
+            onClick={() => onMonthChange("prev")}
+            className="text-todo-text-secondary hover:text-todo-text-primary"
+          >
+            <ChevronLeft className="h-3 w-3 md:h-5 md:w-5" />
           </button>
-          <span className="text-sm">{year}</span>
-          <button onClick={() => onMonthChange('next')} className="text-todo-text-secondary hover:text-todo-text-primary">
-            <ChevronRight className="h-5 w-5" />
+          <span className="text-[10px] md:text-sm">{year}</span>
+          <button
+            onClick={() => onMonthChange("next")}
+            className="text-todo-text-secondary hover:text-todo-text-primary"
+          >
+            <ChevronRight className="h-3 w-3 md:h-5 md:w-5" />
           </button>
         </div>
-        <div className="font-medium">
-          {monthName}
-        </div>
+        <div className="text-xs md:text-base font-medium">{monthName}</div>
       </div>
-      
-      <div className="grid grid-cols-7 gap-1 text-center mb-2">
+
+      <div className="grid grid-cols-7 gap-0.5 md:gap-1 text-center mb-1 md:mb-2">
         {DAYS.map((day) => (
-          <div key={day} className="text-xs text-todo-text-secondary">
+          <div
+            key={day}
+            className="text-[8px] md:text-xs text-todo-text-secondary"
+          >
             {day}
           </div>
         ))}
       </div>
-      
-      <div className="grid grid-cols-7 gap-1">
+
+      <div className="grid grid-cols-7 gap-0.5 md:gap-1">
         {generateCalendarDays()}
       </div>
     </div>
