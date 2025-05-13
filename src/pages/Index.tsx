@@ -291,11 +291,18 @@ const Index = () => {
   );
 
   // Make sure we always have at least the active list tag available
+  // Add active list name as the last item in the array
   const activeListName =
     lists.find((list) => list.active)?.name.toLowerCase() || "life";
-  if (!showingAllTodos && !availableTags.includes(activeListName)) {
-    availableTags.push(activeListName);
-  }
+
+  // Remove activeListName if it's already in the array to avoid duplicates
+  const tagsWithoutActiveName = availableTags.filter(
+    (tag) => tag !== activeListName
+  );
+
+  // Always add the active list name as the last item to ensure it's properly selected
+  // in the TodoInput component
+  const finalAvailableTags = [...tagsWithoutActiveName, activeListName];
 
   // Filter todos based on active list and selected date
   const filteredTodos = todos.filter((todo) => {
@@ -397,7 +404,7 @@ const Index = () => {
 
           <TodoInput
             onAddTodo={handleAddTodo}
-            availableTags={availableTags as string[]}
+            availableTags={finalAvailableTags}
             currentDate={selectedDate}
           />
 
@@ -466,7 +473,7 @@ const Index = () => {
 
       <TodoEdit
         todo={editingTodo}
-        availableTags={availableTags as string[]}
+        availableTags={finalAvailableTags}
         onSave={handleSaveEdit}
         onCancel={handleCancelEdit}
         open={!!editingTodo}
