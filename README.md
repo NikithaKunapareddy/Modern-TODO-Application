@@ -191,10 +191,6 @@ We welcome contributions! Here's how you can help:
 5. **Open a Pull Request**
 
 
-**Built by:**
-
-- **Nikitha** - [GitHub](https://github.com/NikithaKunapareddy)
-
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
